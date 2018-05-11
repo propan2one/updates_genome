@@ -4,6 +4,7 @@
 Created on 11 mai 2018
 @author: delmotte
 Ce script va parser un fichier au format *.gff3
+Dérive de faesteri_convert (le regex) et cmd_abondance_oshv.py (gestion list / dict)
 """
 import os
 import sys
@@ -36,12 +37,15 @@ args = parser.parse_args()
 
 gffname =  args.a
 assert (gffname[-5:] == ".gff3"), "Problem with GFF3 file"
+fastaname =  args.g
+assert (fastaname[-7:] == ".fasta" or fastaname[-3:] == ".fa" ), "Problem with fasta file"
 
 basename = args.o
 #bamfile = basename + "_viralign.bam"
 #count_reads = basename + "_count_reads.txt"
 
-contentGFF = ["seqid", "source", "type", "start", "end", "score", "strand", "phase", "attributes"]
+contentGFF = []
+info_gff = {}
 def gff3parser (filename):
     """ parser de GFF """
     with open(filename) as f:
@@ -50,16 +54,15 @@ def gff3parser (filename):
                 continue
             content = line.strip().split("\t")
             if len(content) == len(contentGFF):
-                #print(content[8])
                 numORF = content[8].strip().split(";")
-                #print(numORF)
                 for orf in numORF:
                     if re.search(r"^product=ORF[0-9]+", orf):
+                        contentGFF.append(orf)
                         print(orf)
-
+                info_gff = dict(zip(contentGFF, list(content[3], content[4], content[6])) )
 
 #print("\n\n"+ args.f + " | Started at " + str(datetime.datetime.now()))
 
 gff3parser(gffname)
-
+print(info_gff)
 #print("\n\n"+ args.f + " | End at " + str(datetime.datetime.now()))
