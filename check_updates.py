@@ -12,10 +12,13 @@ import subprocess
 import datetime, time
 import shutil
 import os
+import re
+from Bio.Blast import NCBIWWW
+from Bio import SeqIO
 
-#python  /export/home/delmotte/Documents/divohsv1/comptageSNP.py -g /export/home/delmotte/Documents/data/diversite_ohsv1/oshv-1A.fa  -a /export/home/delmotte/Documents/data/diversite_ohsv1/oshv-1A-corr.gff3  -o af11-t48-R1  -n 4
+#python  /export/home/delmotte/Documents/updates_genome/check_updates.py -g /export/home/delmotte/Documents/data/diversite_ohsv1/oshv-1A.fa  -a /export/home/delmotte/Documents/data/diversite_ohsv1/oshv-1A-corr.gff3  -o af11-t48-R1  -n 4
 
-#python  /export/home/delmotte/Documents/divohsv1/comptageSNP.py 
+#python  /export/home/delmotte/Documents/updates_genome/check_updates.py 
 # -g /export/home/delmotte/Documents/data/diversite_ohsv1/oshv-1A.fa 
 # -a /export/home/delmotte/Documents/data/diversite_ohsv1/oshv-1A-corr.gff3 
 # -o af11-t48-R1 
@@ -47,9 +50,12 @@ def gff3parser (filename):
                 continue
             content = line.strip().split("\t")
             if len(content) == len(contentGFF):
-                print(content[8])
+                #print(content[8])
                 numORF = content[8].strip().split(";")
-                print(numORF)
+                #print(numORF)
+                for orf in numORF:
+                    if re.search(r"^product=ORF[0-9]+", orf):
+                        print(orf)
 
 
 #print("\n\n"+ args.f + " | Started at " + str(datetime.datetime.now()))
