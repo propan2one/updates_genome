@@ -6,13 +6,7 @@ Created on 11 mai 2018
 Ce script va parser un fichier au format *.gff3
 Derive : ComptageSNP.py
 """
-import os
-import sys
-import argparse
-import subprocess
-import datetime, time
-import shutil
-import os
+import os, sys, argparse, subprocess, re, datetime, time, shutil
 
 # python3 ~/Documents/updates_genome/check_updates.py -g ~/Documents/data/OsHV-1_strain_microVar_variant_A.fasta -a ~/Documents/data/OsHV-1_strain_microVar_variant_A.gff3 -o af11-t48-R1 -n 4
 
@@ -48,9 +42,13 @@ def gff3parser (filename):
                 continue
             content = line.strip().split("\t")
             if len(content) == len(contentGFF):
-                print(content[8])
+                print(content[3], content[4], content[6])
+                #print(content[8])
                 numORF = content[8].strip().split(";")
-                print(numORF)
+                #print(numORF)
+                for product in numORF:
+                    if re.search(r"^product=ORF\d{0,3}", product):
+                        print(product)
 
 gff3parser(gffname)
 
