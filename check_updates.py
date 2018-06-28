@@ -4,6 +4,7 @@
 Created on 11 mai 2018
 @author: delmotte
 Ce script va parser un fichier au format *.gff3
+Derive : ComptageSNP.py
 """
 import os
 import sys
@@ -13,17 +14,17 @@ import datetime, time
 import shutil
 import os
 
-#python  /export/home/delmotte/Documents/divohsv1/comptageSNP.py -g /export/home/delmotte/Documents/data/diversite_ohsv1/oshv-1A.fa  -a /export/home/delmotte/Documents/data/diversite_ohsv1/oshv-1A-corr.gff3  -o af11-t48-R1  -n 4
+# python3 ~/Documents/updates_genome/check_updates.py -g ~/Documents/data/OsHV-1_strain_microVar_variant_A.fasta -a ~/Documents/data/OsHV-1_strain_microVar_variant_A.gff3 -o af11-t48-R1 -n 4
 
-#python  /export/home/delmotte/Documents/divohsv1/comptageSNP.py 
-# -g /export/home/delmotte/Documents/data/diversite_ohsv1/oshv-1A.fa 
-# -a /export/home/delmotte/Documents/data/diversite_ohsv1/oshv-1A-corr.gff3 
+#python ~/Documents/updates_genome/check_updates.py 
+# -g ~/Documents/data/OsHV-1_strain_microVar_variant_A.fasta
+# -a ~/Documents/data/OsHV-1_strain_microVar_variant_A.gff3 
 # -o af11-t48-R1 
 # -n 4
 
 parser = argparse.ArgumentParser(description='')
-#parser.add_argument('-f', help='R1 fastq file')
-#parser.add_argument('-r', help='R2 fastq file', default='')
+parser.add_argument('-v', '--version', action='version',
+                    version='%(prog)s 1.0', help="Show program's version number and exit.")
 parser.add_argument('-g', help='Genome fasta file')
 parser.add_argument('-a', help='GFF3 annotation file')
 parser.add_argument('-o', help='basename for output files') #il y a une / à la fin de l'argument#
@@ -35,8 +36,8 @@ gffname =  args.a
 assert (gffname[-5:] == ".gff3"), "Problem with GFF3 file"
 
 basename = args.o
-#bamfile = basename + "_viralign.bam"
-#count_reads = basename + "_count_reads.txt"
+
+print("\n\n"+ args.f + " | Started at " + str(datetime.datetime.now()))
 
 contentGFF = ["seqid", "source", "type", "start", "end", "score", "strand", "phase", "attributes"]
 def gff3parser (filename):
@@ -51,9 +52,6 @@ def gff3parser (filename):
                 numORF = content[8].strip().split(";")
                 print(numORF)
 
-
-#print("\n\n"+ args.f + " | Started at " + str(datetime.datetime.now()))
-
 gff3parser(gffname)
 
-#print("\n\n"+ args.f + " | End at " + str(datetime.datetime.now()))
+print("\n\n"+ args.f + " | End at " + str(datetime.datetime.now()))
