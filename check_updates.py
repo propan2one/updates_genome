@@ -48,7 +48,7 @@ def gff3parser (filename):
                 #print(numORF)
                 for product in numORF:
                     if re.search(r"^product=ORF\d{0,3}", product):
-                        print(product)
+                        print(product[11:])
 
 gff3parser(gffname)
 
