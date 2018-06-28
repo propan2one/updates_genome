@@ -37,7 +37,7 @@ assert (gffname[-5:] == ".gff3"), "Problem with GFF3 file"
 
 basename = args.o
 
-print("\n\n"+ args.f + " | Started at " + str(datetime.datetime.now()))
+print("\n\n"+ args.g + " | Started at " + str(datetime.datetime.now()))
 
 contentGFF = ["seqid", "source", "type", "start", "end", "score", "strand", "phase", "attributes"]
 def gff3parser (filename):
@@ -54,4 +54,4 @@ def gff3parser (filename):
 
 gff3parser(gffname)
 
-print("\n\n"+ args.f + " | End at " + str(datetime.datetime.now()))
+print("\n\n"+ args.g + " | End at " + str(datetime.datetime.now()))
