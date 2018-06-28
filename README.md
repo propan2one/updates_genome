@@ -6,6 +6,7 @@ Search in a database if your genome code protein at it several ORFs
 * [Description of the actual files :](#Description-of-the-actual-files)
     * [Installation](Installation)
     * [Commande line help](#Commande-line-help)
+    * [Warnings](Warnings)
     * [Usages](#Usage)
     * [Issues](#issues)
 * [History](#history)
@@ -16,6 +17,9 @@ You must have python 3.0 installed
 
 ## Description of the actual files :
 The different database add new sequence all the time, and do you know if proteins discover coded by several ORF are    You can run the script routinly
+
+### Warnings :
+The target for exctract the sequence of the ORF in GFF3 file is the `product=ORFX` where X is the number of ORF, you must check if this is write like this
 
 ### Usage :
 On your terminal 
