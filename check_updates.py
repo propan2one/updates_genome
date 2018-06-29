@@ -56,17 +56,13 @@ def gff3parser (filename, dictOrf):
 
 gff3parser(gffname,orf)
 
-
 # Verification :
 verif = []
-for x in range (1,100):
+for x in range (1,125):
     verif.append(str(x))
 
-for key, value in orf.items():
-    if not key in verif:
-        print(key)
-
-
-
+for val in verif:
+    if not val in orf.keys():
+        print(val)
     
 print("\n\n"+ args.g + " | End at " + str(datetime.datetime.now()))
