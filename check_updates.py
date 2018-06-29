@@ -28,13 +28,13 @@ args = parser.parse_args()
 
 gffname =  args.a
 assert (gffname[-5:] == ".gff3"), "Problem with GFF3 file"
-
 basename = args.o
+orf = {}
 
-print("\n\n"+ args.g + " | Started at " + str(datetime.datetime.now()))
+print("\n\n"+ args.g + " | Started at " + str(datetime.datetime.now()) + "\n")
 
 contentGFF = ["seqid", "source", "type", "start", "end", "score", "strand", "phase", "attributes"]
-def gff3parser (filename):
+def gff3parser (filename, dictOrf):
     """ parser de GFF """
     with open(filename) as f:
         for line in f:
@@ -42,14 +42,31 @@ def gff3parser (filename):
                 continue
             content = line.strip().split("\t")
             if len(content) == len(contentGFF):
-                print(content[3], content[4], content[6])
+                value = [content[3], content[4], content[6]]
+                #print(value)
                 #print(content[8])
                 numORF = content[8].strip().split(";")
                 #print(numORF)
                 for product in numORF:
                     if re.search(r"^product=ORF\d{0,3}", product):
-                        print(product[11:])
+                        keys = product[11:]
+                        dictOrf[keys] = value
+                        #return dictOrf
+        return {}
 
-gff3parser(gffname)
+gff3parser(gffname,orf)
 
+
+# Verification :
+verif = []
+for x in range (1,100):
+    verif.append(str(x))
+
+for key, value in orf.items():
+    if not key in verif:
+        print(key)
+
+
+
+    
 print("\n\n"+ args.g + " | End at " + str(datetime.datetime.now()))
