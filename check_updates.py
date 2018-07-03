@@ -7,6 +7,9 @@ Ce script va parser un fichier au format *.gff3
 Derive : ComptageSNP.py
 """
 import os, sys, argparse, subprocess, re, datetime, time, shutil
+from Bio.Seq import Seq
+from Bio.Alphabet import IUPAC
+from Bio.SeqUtils import GC
 
 # python3 ~/Documents/updates_genome/check_updates.py -g ~/Documents/data/OsHV-1_strain_microVar_variant_A.fasta -a ~/Documents/data/OsHV-1_strain_microVar_variant_A.gff3 -o af11-t48-R1 -n 4
 
@@ -53,12 +56,16 @@ def gff3parser (filename, dictOrf):
                         dictOrf[keys] = value
                         #return dictOrf
         return {}
+def Seqslicer (Sequ, dictORF):
+    """Slice sequence in fasta file from dict"""
+    my_seq = Seq(Sequ)
 
 gff3parser(gffname,orf)
+Seqslicer(args.g, orf)
 
 # Verification :
 verif = []
-for x in range (1,125):
+for x in range (1,10):
     verif.append(str(x))
 
 for val in verif:
@@ -66,3 +73,4 @@ for val in verif:
         print(val)
     
 print("\n\n"+ args.g + " | End at " + str(datetime.datetime.now()))
+
