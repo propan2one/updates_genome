@@ -8,6 +8,8 @@ Derive : ComptageSNP.py
 """
 import os, sys, argparse, subprocess, re, datetime, time, shutil
 from Bio.Seq import Seq
+from Bio import SeqIO
+from Bio.SeqRecord import SeqRecord
 from Bio.Alphabet import IUPAC
 from Bio.SeqUtils import GC
 
@@ -56,12 +58,18 @@ def gff3parser (filename, dictOrf):
                         dictOrf[keys] = value
                         #return dictOrf
         return {}
+
 def Seqslicer (Sequ, dictORF):
     """Slice sequence in fasta file from dict"""
-    my_seq = Seq(Sequ)
+    record = SeqIO.read(Sequ, "fasta")
+    for keys, value in dictORF.items():
+        print("ORF" + keys)
+        startSeq = int(value[0])-1
+        stopSeq = int(value[1])
+        print( record.seq[startSeq:stopSeq ] )
+            
 
 gff3parser(gffname,orf)
-Seqslicer(args.g, orf)
 
 # Verification :
 verif = []
@@ -71,6 +79,9 @@ for x in range (1,10):
 for val in verif:
     if not val in orf.keys():
         print(val)
-    
+
+#Slice the fasta
+Seqslicer(args.g, orf)
+
 print("\n\n"+ args.g + " | End at " + str(datetime.datetime.now()))
 
