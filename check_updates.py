@@ -68,11 +68,8 @@ def Seqslicer (Sequ, dictORF):
     for keys, value in dictORF.items():   
         nameORF = "ORF" + keys        
         seqORF = record.seq[(int(value[0])-1):int(value[1]) ]
-        print(type(seqORF))
-        print(seqORF)
         if value[2] == "-":
             seqORF = inversComplement(str(seqORF))
-            print(seqORF)
         elif value[2] == "+":
             pass
         #print(nameORF, "\n",seqORF) Affiche les séquences dans le tem (stdrr)
