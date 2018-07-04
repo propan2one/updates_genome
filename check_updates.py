@@ -92,15 +92,12 @@ print("\n Les ORF qui ne sont pas trouvé à partir du GFF3 sont :")
 
 # Verification :
 verif = []
-for x in range (1,args.c):
+for x in range (1,(args.c + 1)):
     verif.append(str(x))
 
 for val in verif:
     if not val in orf.keys():
         print(val)
-
-
-
 
 print("\n\n"+ args.g + " | End at " + str(datetime.datetime.now()))
 
