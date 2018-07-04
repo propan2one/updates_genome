@@ -62,11 +62,22 @@ def gff3parser (filename, dictOrf):
 def Seqslicer (Sequ, dictORF):
     """Slice sequence in fasta file from dict"""
     record = SeqIO.read(Sequ, "fasta")
-    for keys, value in dictORF.items():
-        print("ORF" + keys)
-        startSeq = int(value[0])-1
-        stopSeq = int(value[1])
-        print( record.seq[startSeq:stopSeq ] )
+    for keys, value in dictORF.items():   
+        nameORF = "ORF" + keys
+        print(value[2])
+        seqORF = record.seq[(int(value[0])-1):int(value[1]) ]
+        if value[2] == "-":
+            pass
+        elif value[2] == "+":
+            seqORF = seqORF.reverse_complement()
+        #print(nameORF, "\n",seqORF) Affiche les séquences dans le tem (stdrr)
+        if not os.path.isfile(str(nameORF)+ ".fasta"):
+            print("\n writing of" + str(nameORF)+ ".fasta ... \n")
+            with open(str(nameORF)+ ".fasta", "a+") as f:
+                f.writelines(">" + nameORF + "\n")
+                f.writelines(str(seqORF))
+        else :
+            print("\n file {} already exist.. \n".format(str(nameORF)+ ".fasta"))
             
 
 gff3parser(gffname,orf)
