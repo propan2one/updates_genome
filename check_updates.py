@@ -28,6 +28,7 @@ parser.add_argument('-g', help='Genome fasta file')
 parser.add_argument('-a', help='GFF3 annotation file')
 parser.add_argument('-o', help='basename for output files') #il y a une / à la fin de l'argument#
 parser.add_argument('-n', help='Number of threads', type=int, default=4)
+parser.add_argument('-c', help='Number of ORF in the genome', type=int, default=128)
 args = parser.parse_args()
 """ Faut les *.fasta, le *.gff3 , et le *.vcf"""
 
@@ -81,20 +82,25 @@ def Seqslicer (Sequ, dictORF):
         else :
             print("\n file {} already exist.. \n".format(str(nameORF)+ ".fasta"))
             
-
+# ParseGGF3
 gff3parser(gffname,orf)
+
+#Slice the fasta
+Seqslicer(args.g, orf)
+
+print("\n Les ORF qui ne sont pas trouvé à partir du GFF3 sont :")
 
 # Verification :
 verif = []
-for x in range (1,10):
+for x in range (1,args.c):
     verif.append(str(x))
 
 for val in verif:
     if not val in orf.keys():
         print(val)
 
-#Slice the fasta
-Seqslicer(args.g, orf)
+
+
 
 print("\n\n"+ args.g + " | End at " + str(datetime.datetime.now()))
 
