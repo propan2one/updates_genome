@@ -21,7 +21,7 @@ from Bio.SeqUtils import GC
 # -o af11-t48-R1 
 # -n 4
 
-parser = argparse.ArgumentParser(description='')
+parser = argparse.ArgumentParser(description="Ecris l'ensemble des ORF Séparement dans ")
 parser.add_argument('-v', '--version', action='version',
                     version='%(prog)s 1.0', help="Show program's version number and exit.")
 parser.add_argument('-g', help='Genome fasta file')
@@ -59,22 +59,27 @@ def gff3parser (filename, dictOrf):
                         #return dictOrf
         return {}
 
+def inversComplement(input):
+    return(input.upper().replace('A', 'temp').replace('T', 'A').replace('temp', 'T').replace('G', 'temp').replace('C','G').replace('temp','C')[::-1])
+
 def Seqslicer (Sequ, dictORF):
     """Slice sequence in fasta file from dict"""
     record = SeqIO.read(Sequ, "fasta")
     for keys, value in dictORF.items():   
-        nameORF = "ORF" + keys
-        print(value[2])
+        nameORF = "ORF" + keys        
         seqORF = record.seq[(int(value[0])-1):int(value[1]) ]
+        print(type(seqORF))
+        print(seqORF)
         if value[2] == "-":
-            pass
+            seqORF = inversComplement(str(seqORF))
+            print(seqORF)
         elif value[2] == "+":
-            seqORF = seqORF.reverse_complement()
+            pass
         #print(nameORF, "\n",seqORF) Affiche les séquences dans le tem (stdrr)
         if not os.path.isfile(str(nameORF)+ ".fasta"):
-            print("\n writing of" + str(nameORF)+ ".fasta ... \n")
+            print("\n writing of " + str(nameORF)+ ".fasta ... \n")
             with open(str(nameORF)+ ".fasta", "a+") as f:
-                f.writelines(">" + nameORF + "\n")
+                f.writelines(">" + nameORF + "_"+ value[2] + "\n")
                 f.writelines(str(seqORF))
         else :
             print("\n file {} already exist.. \n".format(str(nameORF)+ ".fasta"))
