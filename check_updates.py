@@ -1,52 +1,46 @@
-#!/usr/bin/env python
+!/usr/bin/env python
 # coding: utf8
 """
 Created on 11 mai 2018
 @author: delmotte
 Ce script va parser un fichier au format *.gff3
-Dérive de faesteri_convert (le regex) et cmd_abondance_oshv.py (gestion list / dict)
+Derive : ComptageSNP.py
 """
-import os
-import sys
-import argparse
-import subprocess
-import datetime, time
-import shutil
-import os
-import re
-from Bio.Blast import NCBIWWW
+import os, sys, argparse, subprocess, re, datetime, time, shutil
+from Bio.Seq import Seq
 from Bio import SeqIO
+from Bio.SeqRecord import SeqRecord
+from Bio.Alphabet import IUPAC
+from Bio.SeqUtils import GC
 
-#python  /export/home/delmotte/Documents/updates_genome/check_updates.py -g /export/home/delmotte/Documents/data/diversite_ohsv1/oshv-1A.fa  -a /export/home/delmotte/Documents/data/diversite_ohsv1/oshv-1A-corr.gff3  -o af11-t48-R1  -n 4
+# python3 ~/Documents/updates_genome/check_updates.py -g ~/Documents/data/OsHV-1_strain_microVar_variant_A.fasta -a ~/Documents/data/OsHV-1_strain_microVar_variant_A.gff3 -o af11-t48-R1 -n 4
 
-#python  /export/home/delmotte/Documents/updates_genome/check_updates.py 
-# -g /export/home/delmotte/Documents/data/diversite_ohsv1/oshv-1A.fa 
-# -a /export/home/delmotte/Documents/data/diversite_ohsv1/oshv-1A-corr.gff3 
+#python ~/Documents/updates_genome/check_updates.py 
+# -g ~/Documents/data/OsHV-1_strain_microVar_variant_A.fasta
+# -a ~/Documents/data/OsHV-1_strain_microVar_variant_A.gff3 
 # -o af11-t48-R1 
 # -n 4
 
-parser = argparse.ArgumentParser(description='')
-#parser.add_argument('-f', help='R1 fastq file')
-#parser.add_argument('-r', help='R2 fastq file', default='')
+parser = argparse.ArgumentParser(description="Ecris l'ensemble des ORF Séparement dans ")
+parser.add_argument('-v', '--version', action='version',
+                    version='%(prog)s 1.0', help="Show program's version number and exit.")
 parser.add_argument('-g', help='Genome fasta file')
 parser.add_argument('-a', help='GFF3 annotation file')
 parser.add_argument('-o', help='basename for output files') #il y a une / à la fin de l'argument#
 parser.add_argument('-n', help='Number of threads', type=int, default=4)
+parser.add_argument('-c', help='Number of ORF in the genome', type=int, default=128)
 args = parser.parse_args()
 """ Faut les *.fasta, le *.gff3 , et le *.vcf"""
 
 gffname =  args.a
 assert (gffname[-5:] == ".gff3"), "Problem with GFF3 file"
-fastaname =  args.g
-assert (fastaname[-7:] == ".fasta" or fastaname[-3:] == ".fa" ), "Problem with fasta file"
-
 basename = args.o
-#bamfile = basename + "_viralign.bam"
-#count_reads = basename + "_count_reads.txt"
+orf = {}
 
-contentGFF = []
-info_gff = {}
-def gff3parser (filename):
+print("\n\n"+ args.g + " | Started at " + str(datetime.datetime.now()) + "\n")
+
+contentGFF = ["seqid", "source", "type", "start", "end", "score", "strand", "phase", "attributes"]
+def gff3parser (filename, dictOrf):
     """ parser de GFF """
     with open(filename) as f:
         for line in f:
@@ -54,15 +48,56 @@ def gff3parser (filename):
                 continue
             content = line.strip().split("\t")
             if len(content) == len(contentGFF):
+                value = [content[3], content[4], content[6]]
+                #print(value)
+                #print(content[8])
                 numORF = content[8].strip().split(";")
-                for orf in numORF:
-                    if re.search(r"^product=ORF[0-9]+", orf):
-                        contentGFF.append(orf)
-                        print(orf)
-                info_gff = dict(zip(contentGFF, list(content[3], content[4], content[6])) )
+                #print(numORF)
+                for product in numORF:
+                    if re.search(r"^product=ORF\d{0,3}", product):
+                        keys = product[11:]
+                        dictOrf[keys] = value
+                        #return dictOrf
+        return {}
 
-#print("\n\n"+ args.f + " | Started at " + str(datetime.datetime.now()))
+def inversComplement(input):
+    return(input.upper().replace('A', 'temp').replace('T', 'A').replace('temp', 'T').replace('G', 'temp').replace('C','G').replace('temp','C')[::-1])
 
-gff3parser(gffname)
-print(info_gff)
-print("\n\n"+ args.f + " | End at " + str(datetime.datetime.now())) 
+def Seqslicer (Sequ, dictORF):
+    """Slice sequence in fasta file from dict"""
+    record = SeqIO.read(Sequ, "fasta")
+    for keys, value in dictORF.items():   
+        nameORF = "ORF" + keys        
+        seqORF = record.seq[(int(value[0])-1):int(value[1]) ]
+        if value[2] == "-":
+            seqORF = inversComplement(str(seqORF))
+        elif value[2] == "+":
+            pass
+        #print(nameORF, "\n",seqORF) Affiche les séquences dans le tem (stdrr)
+        if not os.path.isfile(str(nameORF)+ ".fasta"):
+            print("\n writing of " + str(nameORF)+ ".fasta ... \n")
+            with open(str(nameORF)+ ".fasta", "a+") as f:
+                f.writelines(">" + nameORF + "_"+ value[2] + "\n")
+                f.writelines(str(seqORF))
+        else :
+            print("\n file {} already exist.. \n".format(str(nameORF)+ ".fasta"))
+            
+# ParseGGF3
+gff3parser(gffname,orf)
+
+#Slice the fasta
+Seqslicer(args.g, orf)
+
+print("\n Les ORF qui ne sont pas trouvé à partir du GFF3 sont :")
+
+# Verification :
+verif = []
+for x in range (1,(args.c + 1)):
+    verif.append(str(x))
+
+for val in verif:
+    if not val in orf.keys():
+        print(val)
+
+print("\n\n"+ args.g + " | End at " + str(datetime.datetime.now()))
+
