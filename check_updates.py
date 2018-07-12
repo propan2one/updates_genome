@@ -65,4 +65,4 @@ def gff3parser (filename):
 
 gff3parser(gffname)
 print(info_gff)
-#print("\n\n"+ args.f + " | End at " + str(datetime.datetime.now()))
+print("\n\n"+ args.f + " | End at " + str(datetime.datetime.now())) 
